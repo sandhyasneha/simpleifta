@@ -275,7 +275,7 @@ footer a { text-decoration: underline; text-underline-offset: 3px; }
 <footer>
   <div class="wrap">
     <span>A free tool from <a href="https://trucktaxpro.com" rel="noopener">TruckTaxPro</a></span>
-    <span>US contiguous states only. Canadian provinces are not supported yet.</span>
+    <span>US states only, diesel only. Not affiliated with IFTA, Inc.</span>
   </div>
 </footer>
 
@@ -405,7 +405,7 @@ function renderRows() {
       <div class="field"><label for="mi${i}">Total miles</label>
         <input id="mi${i}" data-f="miles" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.miles)}" placeholder="0"></div>
       <div class="field"><label for="tm${i}">Taxable miles</label>
-        <input id="tm${i}" data-f="taxable" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.taxable)}" placeholder="Same as total"></div>
+        <input id="tm${i}" data-f="taxable" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.taxable)}" placeholder="Optional"></div>
       <div class="field"><label for="ga${i}">Gallons bought</label>
         <input id="ga${i}" data-f="gallons" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.gallons)}" placeholder="0"></div>
       <div class="field"><label for="ra${i}">Rate per gallon</label>
