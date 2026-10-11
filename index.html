@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IFTA Calculator | Free fuel tax worksheet</title>
+<meta name="description" content="Free IFTA calculator for owner-operators. Enter miles and fuel by state to estimate your quarterly fuel tax due or credit.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --surface-2: #f2f2f2;
+  --border: #e5e5e5;
+  --border-strong: #c9c9c9;
+  --text: #171717;
+  --muted: #666666;
+  --accent: #0070f3;
+  --accent-text: #ffffff;
+  --due: #c4281c;
+  --due-bg: #fdecea;
+  --credit: #0a7f4f;
+  --credit-bg: #e6f6ee;
+  --warn: #8a5a00;
+  --warn-bg: #fff4d6;
+  --focus: #0070f3;
+  --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000; --surface: #0a0a0a; --surface-2: #141414;
+    --border: #262626; --border-strong: #3d3d3d;
+    --text: #ededed; --muted: #a1a1a1;
+    --accent: #3291ff; --accent-text: #000000;
+    --due: #ff6b60; --due-bg: #2a1210;
+    --credit: #3ecf8e; --credit-bg: #0e2219;
+    --warn: #f5b942; --warn-bg: #2a1f08;
+    --focus: #3291ff;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #000000; --surface: #0a0a0a; --surface-2: #141414;
+  --border: #262626; --border-strong: #3d3d3d;
+  --text: #ededed; --muted: #a1a1a1;
+  --accent: #3291ff; --accent-text: #000000;
+  --due: #ff6b60; --due-bg: #2a1210;
+  --credit: #3ecf8e; --credit-bg: #0e2219;
+  --warn: #f5b942; --warn-bg: #2a1f08;
+  --focus: #3291ff;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 96px;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+
+/* Header */
+header.top { border-bottom: 1px solid var(--border); }
+header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none; }
+.brand .mark { width: 22px; height: 22px; }
+.brand small { font-weight: 400; color: var(--muted); }
+.icon-btn {
+  background: transparent; border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; height: 36px; padding: 0 12px; font: inherit; font-size: 16px; cursor: pointer;
+}
+.icon-btn:hover { background: var(--surface-2); }
+
+/* Hero */
+.hero { padding: 56px 0 28px; }
+.hero h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; letter-spacing: -0.045em; font-weight: 700; margin: 0 0 16px; max-width: 14ch; }
+.hero p { color: var(--muted); font-size: 18px; max-width: 56ch; margin: 0; }
+
+/* Panels */
+.panel { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; }
+.panel + .panel { margin-top: 16px; }
+.panel-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.panel-head h2 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.panel-body { padding: 20px; }
+
+/* Quarter picker */
+.quarters { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--bg); }
+.quarters button {
+  background: transparent; color: var(--muted); border: 0; border-right: 1px solid var(--border);
+  height: 40px; min-width: 52px; padding: 0 14px; font: inherit; font-weight: 500; cursor: pointer;
+}
+.quarters button:last-child { border-right: 0; }
+.quarters button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+select, input[type="number"], input[type="text"] {
+  font: inherit; font-size: 16px; color: var(--text); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px; height: 44px; padding: 0 12px; width: 100%;
+  min-width: 0;
+}
+select:hover, input:hover { border-color: var(--border-strong); }
+input[type="number"] { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.controls select { width: auto; height: 40px; }
+
+/* Status banners */
+.note { display: flex; gap: 10px; align-items: flex-start; border-radius: 8px; padding: 12px 14px; font-size: 14px; margin: 0 0 16px; }
+.note.warn { background: var(--warn-bg); color: var(--warn); }
+.note.info { background: var(--surface-2); color: var(--muted); }
+.note strong { color: inherit; }
+
+/* Entry rows */
+.rows { display: grid; gap: 12px; }
+.row {
+  display: grid; gap: 10px;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 0.9fr 44px;
+  align-items: end;
+  padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg);
+}
+.field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.rm {
+  height: 44px; width: 44px; border: 1px solid var(--border); background: transparent; color: var(--muted);
+  border-radius: 8px; cursor: pointer; font-size: 20px; line-height: 1;
+}
+.rm:hover { color: var(--due); border-color: var(--due); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.btn {
+  height: 44px; padding: 0 18px; border-radius: 8px; font: inherit; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border-strong); background: transparent; color: var(--text);
+}
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+.btn.primary:hover { opacity: 0.88; }
+
+@media (max-width: 760px) {
+  .row { grid-template-columns: 1fr 1fr; }
+  .row .f-state { grid-column: 1 / -1; }
+  .row .f-rm { grid-column: 1 / -1; }
+  .rm { width: 100%; font-size: 15px; }
+  .hero { padding-top: 36px; }
+}
+
+/* Result */
+.summary { display: grid; gap: 16px; grid-template-columns: 1.2fr 1fr 1fr 1fr; }
+.stat { border: 1px solid var(--border); border-radius: 10px; padding: 16px; background: var(--bg); }
+.stat .k { font-size: 13px; color: var(--muted); }
+.stat .v { font-family: var(--mono); font-size: 28px; letter-spacing: -0.03em; font-weight: 500; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat.net.due { background: var(--due-bg); border-color: transparent; }
+.stat.net.due .v, .stat.net.due .k { color: var(--due); }
+.stat.net.credit { background: var(--credit-bg); border-color: transparent; }
+.stat.net.credit .v, .stat.net.credit .k { color: var(--credit); }
+@media (max-width: 760px) { .summary { grid-template-columns: 1fr 1fr; } .stat.net { grid-column: 1 / -1; } }
+
+.scroll { overflow-x: auto; margin-top: 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 700px; }
+th, td { padding: 12px 14px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 500; color: var(--muted); font-size: 13px; background: var(--surface); }
+td { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+td:first-child { font-family: var(--sans); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+tfoot td { font-weight: 600; background: var(--surface); }
+.pos { color: var(--due); }
+.neg { color: var(--credit); }
+
+.formula { font-family: var(--mono); font-size: 13px; color: var(--muted); margin: 16px 0 0; line-height: 1.7; }
+.checks { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.checks li { font-size: 14px; border-radius: 8px; padding: 10px 12px; background: var(--warn-bg); color: var(--warn); }
+.empty { text-align: center; color: var(--muted); padding: 28px 0; }
+
+/* Rates */
+details { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); margin-top: 16px; }
+summary { cursor: pointer; padding: 16px 20px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; color: var(--muted); font-weight: 400; }
+details[open] summary::after { content: "\2212"; }
+.rates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0; padding: 0 20px 20px; }
+.rates-grid div { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; padding-right: 14px; }
+.rates-grid span:last-child { font-family: var(--mono); color: var(--muted); }
+
+.disclaimer { color: var(--muted); font-size: 13px; margin-top: 28px; max-width: 70ch; }
+footer { border-top: 1px solid var(--border); margin-top: 40px; padding: 24px 0; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+footer a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Bottom promo: slim and dismissible */
+.promo {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--text); color: var(--bg);
+  display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;
+  z-index: 10; font-size: 15px;
+}
+.promo[hidden] { display: none; }
+.promo a.cta {
+  background: var(--bg); color: var(--text); text-decoration: none; font-weight: 600;
+  padding: 8px 14px; border-radius: 8px; white-space: nowrap;
+}
+.promo button { background: transparent; border: 0; color: inherit; font-size: 22px; cursor: pointer; opacity: 0.7; padding: 0 6px; }
+
+@media print {
+  header.top, .promo, .actions, details, .panel.entry, .hero, .rm { display: none !important; }
+  body { padding: 0; background: #fff; color: #000; }
+  .panel { border: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#">
+      <svg class="mark" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 23 21H1z"/></svg>
+      IFTA Lite <small>by TruckTaxPro</small>
+    </a>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch theme">Theme</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Know your IFTA tax before you file.</h1>
+    <p>Enter miles and fuel for each state. Get a worksheet showing what you owe or get back this quarter. Free, with no signup.</p>
+  </section>
+
+  <section class="panel entry" aria-labelledby="entryTitle">
+    <div class="panel-head">
+      <h2 id="entryTitle">Quarter and fuel details</h2>
+      <div class="controls">
+        <select id="year" aria-label="Year"></select>
+        <div class="quarters" role="group" aria-label="Quarter" id="quarters"></div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div id="rateNote"></div>
+      <div class="rows" id="rows"></div>
+      <div class="actions">
+        <button class="btn" id="addRow" type="button">Add a state</button>
+        <button class="btn" id="clearAll" type="button">Clear all</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="resTitle" aria-live="polite">
+    <div class="panel-head">
+      <h2 id="resTitle">IFTA worksheet (estimate)</h2>
+      <div class="controls">
+        <button class="btn" id="copyCsv" type="button">Copy as CSV</button>
+        <button class="btn primary" id="printBtn" type="button">Print</button>
+      </div>
+    </div>
+    <div class="panel-body" id="result"></div>
+  </section>
+
+  <details id="ratesDetails">
+    <summary>Tax rates used in this worksheet</summary>
+    <div id="ratesMeta" class="panel-body" style="padding-top:0"></div>
+    <div class="rates-grid" id="ratesGrid"></div>
+  </details>
+
+  <p class="disclaimer">This worksheet helps you compile figures for your IFTA return. It does not file the return. Check every number against your base-state tax portal and your own records before you submit, and keep receipts and trip logs for four years.</p>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>A free tool from <a href="https://trucktaxpro.com" rel="noopener">TruckTaxPro</a></span>
+    <span>US contiguous states only. Canadian provinces are not supported yet.</span>
+  </div>
+</footer>
+
+<aside class="promo" id="promo">
+  <span>Truck at 55,000 lbs or more? E-file Form 2290 for $6.99 with code <strong>TRUCKTAXPRO</strong>.</span>
+  <a class="cta" href="https://trucktaxpro.com/offer" rel="noopener">E-file Form 2290</a>
+  <button type="button" id="promoClose" aria-label="Dismiss offer">&times;</button>
+</aside>
+
+<script>
+/* ---------- Data ---------- */
+const STATES = [
+  ["AL","Alabama"],["AZ","Arizona"],["AR","Arkansas"],["CA","California"],["CO","Colorado"],
+  ["CT","Connecticut"],["DE","Delaware"],["FL","Florida"],["GA","Georgia"],["ID","Idaho"],
+  ["IL","Illinois"],["IN","Indiana"],["IA","Iowa"],["KS","Kansas"],["KY","Kentucky"],
+  ["LA","Louisiana"],["ME","Maine"],["MD","Maryland"],["MA","Massachusetts"],["MI","Michigan"],
+  ["MN","Minnesota"],["MS","Mississippi"],["MO","Missouri"],["MT","Montana"],["NE","Nebraska"],
+  ["NV","Nevada"],["NH","New Hampshire"],["NJ","New Jersey"],["NM","New Mexico"],["NY","New York"],
+  ["NC","North Carolina"],["ND","North Dakota"],["OH","Ohio"],["OK","Oklahoma"],["OR","Oregon"],
+  ["PA","Pennsylvania"],["RI","Rhode Island"],["SC","South Carolina"],["SD","South Dakota"],
+  ["TN","Tennessee"],["TX","Texas"],["UT","Utah"],["VT","Vermont"],["VA","Virginia"],
+  ["WA","Washington"],["WV","West Virginia"],["WI","Wisconsin"],["WY","Wyoming"]
+];
+const NAME = Object.fromEntries(STATES);
+
+/* Rates are keyed by "YYYY-Qn". A quarter with no entry is blocked from using
+   table rates, so a worksheet never silently uses the wrong quarter's rates.
+   verified:false means the values were NOT loaded from iftach.org yet.
+   Replace this object with your admin-imported ifta_tax_rates data. */
+const RATE_SETS = {
+  "2026-Q3": {
+    verified: true,
+    source: "Diesel rates checked against the IFTA, Inc. 3Q2026 final matrix. Kentucky and Virginia include their diesel surcharges.",
+    rates: {
+      AL:.31, AZ:.26, AR:.285, CA:.979, CO:.335, CT:.499, DE:.22, FL:.4097, GA:.373, ID:.32,
+      IL:.738, IN:.63, IA:.325, KS:.26, KY:.325, LA:.2, ME:.312, MD:.4745, MA:.24, MI:.524,
+      MN:.326, MS:.24, MO:.295, MT:.2975, NE:.318, NV:.27, NH:.222, NJ:.561, NM:.21, NY:.3805,
+      NC:.41, ND:.23, OH:.47, OK:.19, OR:0, PA:.741, RI:.4, SC:.28, SD:.28, TN:.27, TX:.2,
+      UT:.379, VT:.31, VA:.479, WA:.595, WV:.357, WI:.329, WY:.24
+    }
+  }
+};
+
+/* Confirm rounding rules with your IFTA CPA and the IFTA Procedures Manual. */
+const MPG_DECIMALS = 2;
+
+/* ---------- State ---------- */
+const DEFAULT_ROWS = [
+  { st: "TX", miles: "3000", taxable: "", gallons: "400", rate: null },
+  { st: "NM", miles: "1500", taxable: "", gallons: "350", rate: null }
+];
+let state = { year: 2026, quarter: 3, rows: JSON.parse(JSON.stringify(DEFAULT_ROWS)) };
+
+try {
+  const saved = JSON.parse(localStorage.getItem("ifta-lite-v1") || "null");
+  if (saved && Array.isArray(saved.rows)) state = saved;
+} catch (e) {}
+function persist() { try { localStorage.setItem("ifta-lite-v1", JSON.stringify(state)); } catch (e) {} }
+
+/* ---------- Helpers ---------- */
+const $ = (id) => document.getElementById(id);
+const key = () => state.year + "-Q" + state.quarter;
+const set = () => RATE_SETS[key()] || null;
+const tableRate = (st) => { const s = set(); return s && st in s.rates ? s.rates[st] : null; };
+const num = (v) => { const n = parseFloat(v); return isFinite(n) ? n : null; };
+const round = (n, d) => { const f = Math.pow(10, d); return Math.round((n + Number.EPSILON) * f) / f; };
+const fmt = (n, d = 2) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const money = (n) => (n < 0 ? "-$" : "$") + fmt(Math.abs(n), 2);
+const signed = (n, d = 2) => (n > 0 ? "+" : n < 0 ? "-" : "") + fmt(Math.abs(n), d);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- Calculation ---------- */
+function calculate() {
+  const rows = state.rows.map((r, i) => {
+    const miles = num(r.miles), gallons = num(r.gallons), taxable = num(r.taxable);
+    const rate = r.rate !== null && r.rate !== "" ? num(r.rate) : tableRate(r.st);
+    return { i, st: r.st, miles, gallons, taxableMiles: taxable !== null ? taxable : miles, rate };
+  });
+  const active = rows.filter((r) => r.miles !== null || r.gallons !== null);
+  const totalMiles = active.reduce((a, r) => a + (r.miles || 0), 0);
+  const totalGallons = active.reduce((a, r) => a + (r.gallons || 0), 0);
+  const mpg = totalGallons > 0 && totalMiles > 0 ? round(totalMiles / totalGallons, MPG_DECIMALS) : null;
+
+  const issues = [];
+  const dup = {};
+  state.rows.forEach((r) => { dup[r.st] = (dup[r.st] || 0) + 1; });
+  Object.keys(dup).forEach((s) => { if (dup[s] > 1) issues.push(NAME[s] + " is listed more than once. Combine those rows."); });
+
+  if (!active.length) return { empty: true };
+  if (!mpg) return { empty: false, blocked: true, issues: ["Enter total miles and gallons purchased to calculate your fleet MPG."], active, totalMiles, totalGallons };
+
+  if (mpg < 4 || mpg > 10) issues.push("Fleet MPG is " + fmt(mpg) + ". Most heavy trucks fall between 4 and 10. Check for missing fuel or mileage.");
+
+  const lines = [];
+  let missingRate = false;
+  active.forEach((r) => {
+    if (r.taxableMiles !== null && r.miles !== null && r.taxableMiles > r.miles) issues.push(NAME[r.st] + ": taxable miles are higher than total miles.");
+    if (!r.gallons) { /* gallons may legitimately be zero */ }
+    if (r.rate === null) { missingRate = true; }
+    const taxableGal = (r.taxableMiles || 0) / mpg;
+    const net = taxableGal - (r.gallons || 0);
+    lines.push({
+      st: r.st, miles: r.miles || 0, taxMiles: r.taxableMiles || 0, gallons: r.gallons || 0,
+      rate: r.rate, taxableGal, net, tax: r.rate === null ? null : round(net * r.rate, 2)
+    });
+  });
+  if (missingRate) return { blocked: true, issues: ["Add a tax rate for every state. Quarter " + key().replace("-", " ") + " rates are not loaded, so enter them from iftach.org."], active, totalMiles, totalGallons };
+
+  const net = round(lines.reduce((a, l) => a + l.tax, 0), 2);
+  return { lines, mpg, totalMiles, totalGallons, net, issues };
+}
+
+/* ---------- Render: entry rows ---------- */
+function stateOptions(sel) {
+  return STATES.map(([c, n]) => `<option value="${c}"${c === sel ? " selected" : ""}>${n} (${c})</option>`).join("");
+}
+function rateDisplay(r) {
+  if (r.rate !== null && r.rate !== "") return r.rate;
+  const t = tableRate(r.st);
+  return t === null ? "" : t.toFixed(4);
+}
+function renderRows() {
+  $("rows").innerHTML = state.rows.map((r, i) => `
+    <div class="row" data-i="${i}">
+      <div class="field f-state"><label for="st${i}">State</label>
+        <select id="st${i}" data-f="st">${stateOptions(r.st)}</select></div>
+      <div class="field"><label for="mi${i}">Total miles</label>
+        <input id="mi${i}" data-f="miles" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.miles)}" placeholder="0"></div>
+      <div class="field"><label for="tm${i}">Taxable miles</label>
+        <input id="tm${i}" data-f="taxable" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.taxable)}" placeholder="Same as total"></div>
+      <div class="field"><label for="ga${i}">Gallons bought</label>
+        <input id="ga${i}" data-f="gallons" type="number" inputmode="decimal" min="0" step="any" value="${esc(r.gallons)}" placeholder="0"></div>
+      <div class="field"><label for="ra${i}">Rate per gallon</label>
+        <input id="ra${i}" data-f="rate" type="number" inputmode="decimal" min="0" step="0.0001" value="${esc(rateDisplay(r))}" placeholder="0.0000"></div>
+      <div class="f-rm"><button class="rm" type="button" data-rm="${i}" aria-label="Remove ${NAME[r.st]} row">&times;</button></div>
+    </div>`).join("");
+}
+
+/* ---------- Render: result ---------- */
+function renderResult() {
+  const c = calculate();
+  const el = $("result");
+  if (c.empty) { el.innerHTML = `<div class="empty">Add miles and gallons for at least one state to see your worksheet.</div>`; return; }
+  const issues = (c.issues || []).map((m) => `<li>${esc(m)}</li>`).join("");
+  if (c.blocked) { el.innerHTML = `<ul class="checks" style="margin-top:0">${issues}</ul>`; return; }
+
+  const dir = c.net > 0 ? "due" : c.net < 0 ? "credit" : "";
+  const label = c.net > 0 ? "Net tax due" : c.net < 0 ? "Net credit" : "Net tax";
+  const body = c.lines.map((l) => `
+    <tr>
+      <td>${NAME[l.st]} (${l.st})</td>
+      <td>${fmt(l.miles)}</td>
+      <td>${fmt(l.taxMiles)}</td>
+      <td>${fmt(l.gallons)}</td>
+      <td>${fmt(l.taxableGal)}</td>
+      <td class="${l.net > 0 ? "pos" : l.net < 0 ? "neg" : ""}">${signed(l.net)}</td>
+      <td>$${l.rate.toFixed(4)}</td>
+      <td class="${l.tax > 0 ? "pos" : l.tax < 0 ? "neg" : ""}">${l.tax > 0 ? "+" : l.tax < 0 ? "-" : ""}$${fmt(Math.abs(l.tax))}</td>
+    </tr>`).join("");
+  const tNet = c.lines.reduce((a, l) => a + l.net, 0);
+  const tTaxable = c.lines.reduce((a, l) => a + l.taxableGal, 0);
+  const tTaxMiles = c.lines.reduce((a, l) => a + l.taxMiles, 0);
+
+  el.innerHTML = `
+    <div class="summary">
+      <div class="stat net ${dir}"><div class="k">${label}, ${key().replace("-", " ")}</div><div class="v">${money(Math.abs(c.net))}</div></div>
+      <div class="stat"><div class="k">Fleet MPG</div><div class="v">${fmt(c.mpg)}</div></div>
+      <div class="stat"><div class="k">Total miles</div><div class="v">${fmt(c.totalMiles, 0)}</div></div>
+      <div class="stat"><div class="k">Gallons bought</div><div class="v">${fmt(c.totalGallons, 0)}</div></div>
+    </div>
+    ${issues ? `<ul class="checks">${issues}</ul>` : ""}
+    <div class="scroll"><table>
+      <thead><tr><th>Jurisdiction</th><th>Total miles</th><th>Taxable miles</th><th>Gallons bought</th><th>Taxable gallons</th><th>Net gallons</th><th>Rate</th><th>Tax due (+) / credit (-)</th></tr></thead>
+      <tbody>${body}</tbody>
+      <tfoot><tr><td>Total</td><td>${fmt(c.totalMiles)}</td><td>${fmt(tTaxMiles)}</td><td>${fmt(c.totalGallons)}</td><td>${fmt(tTaxable)}</td><td>${signed(tNet)}</td><td></td><td class="${c.net > 0 ? "pos" : c.net < 0 ? "neg" : ""}">${c.net > 0 ? "+" : c.net < 0 ? "-" : ""}$${fmt(Math.abs(c.net))}</td></tr></tfoot>
+    </table></div>
+    <p class="formula">Fleet MPG = total miles / total gallons = ${fmt(c.totalMiles)} / ${fmt(c.totalGallons)} = ${fmt(c.mpg)}<br>
+    Taxable gallons = taxable miles / fleet MPG<br>
+    Net gallons = taxable gallons - gallons bought<br>
+    Tax = net gallons x rate (positive is due, negative is credit)</p>`;
+}
+
+/* ---------- Render: quarter / rates ---------- */
+function renderQuarter() {
+  $("year").innerHTML = [2027, 2026, 2025].map((y) => `<option value="${y}"${y === state.year ? " selected" : ""}>${y}</option>`).join("");
+  $("quarters").innerHTML = [1, 2, 3, 4].map((q) => `<button type="button" data-q="${q}" aria-pressed="${q === state.quarter}">Q${q}</button>`).join("");
+
+  const s = set();
+  let note = "";
+  if (!s) {
+    note = `<div class="note warn"><span><strong>${key().replace("-", " ")} rates are not loaded.</strong> Enter the rate for each state below, using the table from iftach.org for this quarter. Use that quarter's rates, not the current ones.</span></div>`;
+  } else if (!s.verified) {
+    note = `<div class="note warn"><span><strong>These rates are not verified.</strong> ${esc(s.source)} Check them against iftach.org before relying on the result.</span></div>`;
+  }
+  $("rateNote").innerHTML = note;
+
+  $("ratesMeta").innerHTML = s
+    ? `<p style="color:var(--muted);font-size:14px;margin:0">${key().replace("-", " ")}. ${s.verified ? "Diesel rates checked against the IFTA, Inc. final matrix. Kentucky and Virginia include their surcharges." : "Unverified rates."}</p>`
+    : `<p style="color:var(--muted);font-size:14px;margin:0">No rates loaded for ${key().replace("-", " ")}.</p>`;
+  $("ratesGrid").innerHTML = s ? STATES.map(([c, n]) => `<div><span>${n}</span><span>$${s.rates[c].toFixed(4)}</span></div>`).join("") : "";
+}
+
+/* ---------- Events ---------- */
+function refresh(full) { if (full) renderRows(); renderResult(); persist(); }
+
+$("rows").addEventListener("input", (e) => {
+  const row = e.target.closest(".row"); if (!row) return;
+  const i = +row.dataset.i, f = e.target.dataset.f; if (!f) return;
+  state.rows[i][f] = f === "rate" ? (e.target.value === "" ? null : e.target.value) : e.target.value;
+  if (f === "st") {
+    state.rows[i].rate = null;
+    const ra = row.querySelector('[data-f="rate"]');
+    const t = tableRate(e.target.value);
+    ra.value = t === null ? "" : t.toFixed(4);
+  }
+  refresh(false);
+});
+$("rows").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-rm]"); if (!b) return;
+  state.rows.splice(+b.dataset.rm, 1); refresh(true);
+});
+$("addRow").addEventListener("click", () => {
+  const used = new Set(state.rows.map((r) => r.st));
+  const next = STATES.find(([c]) => !used.has(c));
+  state.rows.push({ st: next ? next[0] : "TX", miles: "", taxable: "", gallons: "", rate: null });
+  refresh(true);
+  const last = $("rows").lastElementChild; if (last) last.querySelector('[data-f="miles"]').focus();
+});
+$("clearAll").addEventListener("click", () => {
+  state.rows = [{ st: "TX", miles: "", taxable: "", gallons: "", rate: null }]; refresh(true);
+});
+$("quarters").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-q]"); if (!b) return;
+  state.quarter = +b.dataset.q; state.rows.forEach((r) => (r.rate = null));
+  renderQuarter(); refresh(true);
+});
+$("year").addEventListener("change", (e) => {
+  state.year = +e.target.value; state.rows.forEach((r) => (r.rate = null));
+  renderQuarter(); refresh(true);
+});
+
+$("copyCsv").addEventListener("click", async () => {
+  const c = calculate(); const btn = $("copyCsv");
+  if (!c.lines) { btn.textContent = "Nothing to copy"; setTimeout(() => (btn.textContent = "Copy as CSV"), 1600); return; }
+  const head = ["Jurisdiction","Total miles","Taxable miles","Gallons bought","Taxable gallons","Net gallons","Rate","Tax"];
+  const lines = c.lines.map((l) => [l.st, l.miles, l.taxMiles, l.gallons, l.taxableGal.toFixed(2), l.net.toFixed(2), l.rate.toFixed(4), l.tax.toFixed(2)].join(","));
+  const csv = [head.join(","), ...lines, ["TOTAL","","","","","","",c.net.toFixed(2)].join(","), "", "Fleet MPG," + c.mpg.toFixed(2), "Quarter," + key()].join("\n");
+  try { await navigator.clipboard.writeText(csv); btn.textContent = "Copied"; }
+  catch (e) { btn.textContent = "Copy not allowed here"; }
+  setTimeout(() => (btn.textContent = "Copy as CSV"), 1600);
+});
+$("printBtn").addEventListener("click", () => window.print());
+
+/* Theme */
+try { const t = localStorage.getItem("ifta-lite-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+$("themeBtn").addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("ifta-lite-theme", next); } catch (e) {}
+});
+
+/* Promo */
+try { if (sessionStorage.getItem("ifta-promo-closed")) $("promo").hidden = true; } catch (e) {}
+$("promoClose").addEventListener("click", () => {
+  $("promo").hidden = true;
+  try { sessionStorage.setItem("ifta-promo-closed", "1"); } catch (e) {}
+});
+
+renderQuarter(); renderRows(); renderResult();
+</script>
+</body>
+</html>
