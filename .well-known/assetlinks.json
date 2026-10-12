@@ -1,8 +1,11 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.trucktaxpro.ifta.twa",
-        "sha256_cert_fingerprints": ["B2:AC:B6:13:00:8C:5C:8B:A4:AF:89:DA:AC:6B:D3:5D:37:48:CB:AB:52:41:D7:9F:0D:1D:16:9E:EF:19:22:93"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.trucktaxpro.ifta.twa",
+    "sha256_cert_fingerprints": [
+      "B2:AC:B6:13:00:8C:5C:8B:A4:AF:89:DA:AC:6B:D3:5D:37:48:CB:AB:52:41:D7:9F:0D:1D:16:9E:EF:19:22:93",
+      "07:29:4B:DA:B7:78:61:90:80:79:27:67:98:67:5B:50:CB:45:8E:D3:86:09:4F:85:1C:68:9A:47:F3:03:46:79"
+    ]
+  }
+}]
